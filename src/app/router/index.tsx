@@ -12,7 +12,6 @@ const OrderSuccess = lazy(() => import('../../pages/OrderSuccess/index'));
 const Orders = lazy(() => import('../../pages/Orders/index'));
 const OrderDetails = lazy(() => import('../../pages/OrderDetails/index'));
 const Wishlist = lazy(() => import('../../pages/Wishlist/index'));
-const Profile = lazy(() => import('../../pages/Profile/index'));
 const CustomerDashboard = lazy(() => import('../../pages/customer/Dashboard/index'));
 const CustomerOrders = lazy(() => import('../../pages/customer/Orders/index'));
 const CustomerOrderDetails = lazy(() => import('../../pages/customer/OrderDetails/index'));
@@ -167,14 +166,6 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<LoadingFallback />}>
         <Wishlist />
-      </Suspense>
-    ),
-  },
-  {
-    path: '/profile',
-    element: (
-      <Suspense fallback={<LoadingFallback />}>
-        <Profile />
       </Suspense>
     ),
   },

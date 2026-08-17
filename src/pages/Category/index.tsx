@@ -12,6 +12,8 @@ export default function Category() {
   const { slug } = useParams();
   const [products, setProducts] = useState<any[]>([]);
   const [categoryName, setCategoryName] = useState<string>('');
+  const [productFilter, setProductFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('default');
 
   useEffect(() => {
     // Initialize mock products if none exist
@@ -31,6 +33,26 @@ export default function Category() {
     }
   }, [slug]);
 
+  // Apply filters and sorting
+  const filteredAndSortedProducts = products.filter(product => {
+    if (productFilter === 'in-stock') return product.stock > 0;
+    if (productFilter === 'on-sale') return product.onSale === true;
+    return true;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'price-low-high':
+        return a.price - b.price;
+      case 'price-high-low':
+        return b.price - a.price;
+      case 'rating':
+        return b.rating - a.rating;
+      case 'newest':
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+      default:
+        return 0;
+    }
+  });
+
   const handleAddToCart = (product: any) => {
     cartService.addToCart(product, 1);
     alert(`${product.name} added to cart!`);
@@ -46,22 +68,31 @@ export default function Category() {
           
           {/* Filters */}
           <div className="mb-6 flex gap-4 flex-wrap">
-            <select className="input-field w-auto">
-              <option>All Products</option>
-              <option>In Stock</option>
-              <option>On Sale</option>
+            <select 
+              className="input-field w-auto"
+              value={productFilter}
+              onChange={(e) => setProductFilter(e.target.value)}
+            >
+              <option value="all">All Products</option>
+              <option value="in-stock">In Stock</option>
+              <option value="on-sale">On Sale</option>
             </select>
-            <select className="input-field w-auto">
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
-              <option>Newest</option>
-              <option>Rating</option>
+            <select 
+              className="input-field w-auto"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="default">Default</option>
+              <option value="price-low-high">Price: Low to High</option>
+              <option value="price-high-low">Price: High to Low</option>
+              <option value="newest">Newest</option>
+              <option value="rating">Rating</option>
             </select>
           </div>
 
           {/* Products Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.map((product) => (
+            {filteredAndSortedProducts.map((product) => (
               <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                 <Link to={`/product/${product.id}`}>
                   <div className="aspect-square bg-gray-200">

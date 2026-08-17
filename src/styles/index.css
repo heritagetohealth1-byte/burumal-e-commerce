@@ -37,6 +37,14 @@
       -ms-user-select: none;
       user-select: none;
     }
+    
+    /* Allow text selection in input fields */
+    input, textarea {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+    }
   }
   
   /* Hide scrollbar for cleaner mobile look */

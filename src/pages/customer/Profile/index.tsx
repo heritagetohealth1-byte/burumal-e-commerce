@@ -5,7 +5,7 @@ import { authService } from '../../../services/authService';
 
 export default function CustomerProfile() {
   const navigate = useNavigate();
-  const user = authService.getUser();
+  const [user, setUser] = useState(authService.getUser());
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
@@ -34,23 +34,35 @@ export default function CustomerProfile() {
   }, [user]);
 
   const handleEditClick = () => {
-    console.log('Edit button clicked');
     setIsEditing(true);
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: value });
   };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Save button clicked', formData);
     
+    // Validation
+    if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.phone.trim()) {
+      alert('Please fill in all required fields (First Name, Last Name, Phone)');
+      return;
+    }
+    
     if (user) {
       const updatedUser = {
         ...user,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone,
-        email: formData.email,
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        phone: formData.phone.trim(),
+        email: formData.email?.trim() || '',
       };
+      console.log('Updating user with:', updatedUser);
       authService.updateUser(updatedUser);
+      setUser(updatedUser); // Update local state to reflect changes
+      
       setSaveSuccess(true);
       setIsEditing(false);
       
@@ -101,7 +113,7 @@ export default function CustomerProfile() {
             </div>
 
             {/* Personal Information */}
-            <div className="card">
+            <div className="card relative z-10">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold">Personal Information</h2>
                 {!isEditing && (
@@ -115,16 +127,18 @@ export default function CustomerProfile() {
               </div>
 
               {isEditing ? (
-                <form onSubmit={handleSave} className="space-y-4">
+                <form onSubmit={handleSave} className="space-y-4 relative z-20">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
                       <input
                         type="text"
                         value={formData.firstName}
-                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                        required
+                        onChange={(e) => handleInputChange('firstName', e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none bg-white"
+                        autoFocus
+                        readOnly={false}
+                        style={{ pointerEvents: 'auto', userSelect: 'text', WebkitUserSelect: 'text' }}
                       />
                     </div>
                     <div>
@@ -132,9 +146,10 @@ export default function CustomerProfile() {
                       <input
                         type="text"
                         value={formData.lastName}
-                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-                        required
+                        onChange={(e) => handleInputChange('lastName', e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none bg-white"
+                        readOnly={false}
+                        style={{ pointerEvents: 'auto', userSelect: 'text', WebkitUserSelect: 'text' }}
                       />
                     </div>
                   </div>
@@ -143,10 +158,11 @@ export default function CustomerProfile() {
                     <input
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none bg-white"
                       placeholder="+257 XX XXX XXX"
-                      required
+                      readOnly={false}
+                      style={{ pointerEvents: 'auto', userSelect: 'text', WebkitUserSelect: 'text' }}
                     />
                   </div>
                   <div>
@@ -154,9 +170,11 @@ export default function CustomerProfile() {
                     <input
                       type="email"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none bg-white"
                       placeholder="your@email.com"
+                      readOnly={false}
+                      style={{ pointerEvents: 'auto', userSelect: 'text', WebkitUserSelect: 'text' }}
                     />
                   </div>
                   <div className="flex gap-2">
