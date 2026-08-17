@@ -9,6 +9,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [showMenu, setShowMenu] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentLang, setCurrentLang] = useState(i18n.language);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
@@ -84,24 +85,24 @@ const Header = () => {
       <div className="container">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
             <img
               src="https://i.postimg.cc/dVMwGzsY/Burumal-logo.jpg"
               alt="BURUMAL"
-              className="h-14 w-14 rounded-full object-cover"
+              className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover"
             />
-            <span className="text-xl font-bold text-primary-600">BURUMAL</span>
+            <span className="text-lg sm:text-xl font-bold text-primary-600 hidden sm:block">BURUMAL</span>
           </Link>
 
           {/* Search Bar - Desktop */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-lg mx-8">
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-lg mx-4 lg:mx-8">
             <div className="relative w-full">
               <input
                 type="text"
                 placeholder={t('common.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
               />
               <svg
                 className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
@@ -120,11 +121,21 @@ const Header = () => {
           </form>
 
           {/* Right Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Mobile Search Toggle */}
+            <button
+              onClick={() => setShowMobileSearch(!showMobileSearch)}
+              className="md:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+
             {/* Previous Button */}
             <button
               onClick={() => navigate(-1)}
-              className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
+              className="hidden sm:block p-2 text-gray-600 hover:text-primary-600 transition-colors"
               title="Previous"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -161,7 +172,7 @@ const Header = () => {
             <select
               value={currentLang}
               onChange={(e) => handleLanguageChange(e.target.value)}
-              className="text-sm border border-gray-300 rounded-lg px-2 py-1 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+              className=" hidden sm:block text-sm border border-gray-300 rounded-lg px-2 py-1 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
             >
               <option value="en">EN</option>
               <option value="fr">FR</option>
@@ -183,12 +194,42 @@ const Header = () => {
             {/* Account/Login */}
             <Link
               to="/auth/login"
-              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+              className="hidden sm:block px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm"
             >
               Login
             </Link>
           </div>
         </div>
+
+        {/* Mobile Search Bar */}
+        {showMobileSearch && (
+          <div className="md:hidden pb-4 px-4">
+            <form onSubmit={handleSearch}>
+              <div className="relative w-full">
+                <input
+                  type="text"
+                  placeholder={t('common.search')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
+                />
+                <svg
+                  className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+            </form>
+          </div>
+        )}
       </div>
     </header>
   );

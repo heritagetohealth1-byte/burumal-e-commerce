@@ -1,3 +1,6 @@
+import { vipService } from './vipService';
+import { walletService } from './walletService';
+
 interface CartItem {
   id: string;
   product: {
@@ -37,6 +40,30 @@ class CartService {
     }
 
     this.saveCart(items);
+  }
+
+  checkout(): boolean {
+    const items = this.getCartItems();
+    if (items.length === 0) return false;
+
+    const total = this.getCartTotal();
+    const wallet = walletService.getWallet();
+
+    // Check if wallet has enough balance
+    if (wallet.balance < total) {
+      return false;
+    }
+
+    // Deduct from wallet
+    const success = walletService.deductFunds(total, 'Purchase');
+    if (!success) return false;
+
+    // Update VIP status based on purchase
+    vipService.updateTotalSpent(total);
+
+    // Clear cart
+    this.clearCart();
+    return true;
   }
 
   removeFromCart(itemId: string): void {

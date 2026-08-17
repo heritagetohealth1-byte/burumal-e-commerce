@@ -1,12 +1,16 @@
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomerSidebar from '../../../components/customer/Sidebar';
 import { authService } from '../../../services/authService';
+import { walletService } from '../../../services/walletService';
+import { cartService } from '../../../services/cartService';
 
 export default function CustomerDashboard() {
   const navigate = useNavigate();
   const user = authService.getUser();
+  const [wallet, setWallet] = useState(walletService.getWallet());
+  const [cartCount, setCartCount] = useState(cartService.getCartCount());
 
   useEffect(() => {
     // Redirect to login if not authenticated
@@ -21,12 +25,25 @@ export default function CustomerDashboard() {
     }
   }, [user, navigate]);
 
+  useEffect(() => {
+    // Update data periodically
+    const interval = setInterval(() => {
+      setWallet(walletService.getWallet());
+      setCartCount(cartService.getCartCount());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const greeting = user ? `${user.firstName} ${user.lastName}` : 'Customer';
 
-  const mockStats = {
-    orders: 2,
-    wishlist: 8,
-    wallet: 25000,
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const query = formData.get('search') as string;
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
   };
 
   const recentOrder = {
@@ -51,14 +68,19 @@ export default function CustomerDashboard() {
         <div className="container py-8">
           {/* Greeting */}
           <div className="mb-8">
-            <h1 className="text-2xl font-bold">Good evening, {greeting} 👋</h1>
-            <p className="text-gray-600">What are you looking for today?</p>
+            <div className="mb-4">
+              <h1 className="text-2xl font-bold">Good evening, {greeting} 👋</h1>
+              <p className="text-gray-600">What are you looking for today?</p>
+            </div>
             <div className="mt-4 max-w-lg">
-              <input
-                type="text"
-                placeholder="🔍 Search products..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-              />
+              <form onSubmit={handleSearch}>
+                <input
+                  name="search"
+                  type="text"
+                  placeholder="🔍 Search products..."
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                />
+              </form>
             </div>
           </div>
 
@@ -68,15 +90,15 @@ export default function CustomerDashboard() {
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <p className="text-gray-600">🛒 Orders</p>
-                <p className="text-2xl font-bold">{mockStats.orders}</p>
+                <p className="text-2xl font-bold">{cartCount}</p>
               </div>
               <div>
                 <p className="text-gray-600">❤️ Wishlist</p>
-                <p className="text-2xl font-bold">{mockStats.wishlist}</p>
+                <p className="text-2xl font-bold">{cartCount}</p>
               </div>
               <div className="col-span-2">
                 <p className="text-gray-600">💰 Wallet</p>
-                <p className="text-2xl font-bold">{mockStats.wallet.toLocaleString()} BIF</p>
+                <p className="text-2xl font-bold">{wallet.balance.toLocaleString()} BIF</p>
               </div>
             </div>
           </div>

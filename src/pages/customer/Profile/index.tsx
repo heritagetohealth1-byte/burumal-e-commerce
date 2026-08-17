@@ -6,37 +6,68 @@ import { authService } from '../../../services/authService';
 export default function CustomerProfile() {
   const navigate = useNavigate();
   const user = authService.getUser();
-
-  useEffect(() => {
-    // Redirect to login if not authenticated
-    if (!user) {
-      navigate('/auth/login');
-    }
-  }, [user, navigate]);
-
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
     phone: user?.phone || '',
     email: user?.email || '',
-    preferredLanguage: 'en',
   });
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth/login');
+    }
+  }, [user, navigate]);
+
+  // Update form data when user changes
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        phone: user.phone || '',
+        email: user.email || '',
+      });
+    }
+  }, [user]);
+
+  const handleEditClick = () => {
+    console.log('Edit button clicked');
+    setIsEditing(true);
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    // In production, this would update the user profile
+    console.log('Save button clicked', formData);
+    
     if (user) {
-      authService.updateUser({
+      const updatedUser = {
         ...user,
         firstName: formData.firstName,
         lastName: formData.lastName,
         phone: formData.phone,
         email: formData.email,
-      });
+      };
+      authService.updateUser(updatedUser);
+      setSaveSuccess(true);
+      setIsEditing(false);
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => setSaveSuccess(false), 3000);
     }
+  };
+
+  const handleCancel = () => {
+    // Reset form to current user data
+    setFormData({
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      phone: user?.phone || '',
+      email: user?.email || '',
+    });
     setIsEditing(false);
-    alert('Profile updated successfully!');
   };
 
   return (
@@ -48,6 +79,13 @@ export default function CustomerProfile() {
           <h1 className="text-2xl font-bold mb-6">👤 My Profile</h1>
 
           <div className="max-w-2xl">
+            {/* Success Message */}
+            {saveSuccess && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+                Profile updated successfully!
+              </div>
+            )}
+
             {/* Profile Card */}
             <div className="card text-center mb-6">
               <div className="w-24 h-24 bg-primary-100 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -68,7 +106,7 @@ export default function CustomerProfile() {
                 <h2 className="text-lg font-semibold">Personal Information</h2>
                 {!isEditing && (
                   <button
-                    onClick={() => setIsEditing(true)}
+                    onClick={handleEditClick}
                     className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
                   >
                     Edit Profile
@@ -130,7 +168,7 @@ export default function CustomerProfile() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setIsEditing(false)}
+                      onClick={handleCancel}
                       className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100"
                     >
                       Cancel

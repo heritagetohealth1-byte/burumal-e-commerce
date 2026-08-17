@@ -1,3 +1,5 @@
+import { VIPTier } from './vipService';
+
 interface User {
   id: string;
   phone: string;
@@ -5,6 +7,7 @@ interface User {
   lastName: string;
   email?: string;
   role: 'customer' | 'seller' | 'admin';
+  vipTier?: VIPTier;
 }
 
 class AuthService {
