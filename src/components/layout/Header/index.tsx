@@ -121,13 +121,13 @@ const Header = () => {
           </form>
 
           {/* Right Actions */}
-          <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-4">
             {/* Mobile Search Toggle */}
             <button
               onClick={() => setShowMobileSearch(!showMobileSearch)}
               className="md:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors"
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
@@ -135,10 +135,10 @@ const Header = () => {
             {/* Previous Button */}
             <button
               onClick={() => navigate(-1)}
-              className="hidden sm:block p-2 text-gray-600 hover:text-primary-600 transition-colors"
+              className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
               title="Previous"
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
@@ -149,7 +149,7 @@ const Header = () => {
                 onClick={() => setShowMenu(!showMenu)}
                 className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
@@ -172,7 +172,7 @@ const Header = () => {
             <select
               value={currentLang}
               onChange={(e) => handleLanguageChange(e.target.value)}
-              className=" hidden sm:block text-sm border border-gray-300 rounded-lg px-2 py-1 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+              className="text-xs sm:text-sm border border-gray-300 rounded-lg px-2 py-1 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
             >
               <option value="en">EN</option>
               <option value="fr">FR</option>
@@ -181,11 +181,11 @@ const Header = () => {
 
             {/* Cart Icon */}
             <Link to="/cart" className="relative p-2 text-gray-600 hover:text-primary-600 transition-colors">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-accent-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-accent-600 text-white text-xs rounded-full h-4 w-4 sm:h-5 sm:w-5 flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
@@ -194,7 +194,7 @@ const Header = () => {
             {/* Account/Login */}
             <Link
               to="/auth/login"
-              className="hidden sm:block px-3 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-sm"
+              className="px-2 py-1.5 sm:px-3 sm:py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium text-xs sm:text-sm"
             >
               Login
             </Link>
