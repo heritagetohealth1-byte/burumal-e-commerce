@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header from '../../../components/layout/Header';
 import SellerSidebar from '../../../components/seller/Sidebar';
 import { authService } from '../../../services/authService';

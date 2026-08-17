@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import CustomerSidebar from '../../../components/customer/Sidebar';
 import { cartService } from '../../../services/cartService';
@@ -68,7 +68,7 @@ export default function CustomerWishlist() {
     alert(`${item.name} added to cart!`);
   };
 
-  const handleRemoveFromWishlist = (itemId: string) => {
+  const handleRemoveFromWishlist = (_itemId: string) => {
     alert('Item removed from wishlist');
   };
 

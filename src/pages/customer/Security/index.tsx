@@ -78,7 +78,7 @@ export default function CustomerSecurity() {
     }
   };
 
-  const handleLogoutSession = (sessionId: string) => {
+  const handleLogoutSession = (_sessionId: string) => {
     if (confirm('Are you sure you want to log out from this device?')) {
       alert('Logged out successfully!');
     }

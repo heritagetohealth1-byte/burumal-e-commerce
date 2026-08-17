@@ -1,4 +1,3 @@
-import Button from '../../../components/common/Button';
 import Sidebar from '../../../components/admin/Sidebar';
 
 export default function SuperAdminAnalytics() {
