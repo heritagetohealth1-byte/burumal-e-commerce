@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from 'react';
 import { authService } from '../../../services/authService';
@@ -6,9 +6,11 @@ import { authService } from '../../../services/authService';
 const Header = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [showMenu, setShowMenu] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentLang, setCurrentLang] = useState(i18n.language);
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -38,6 +40,13 @@ const Header = () => {
     }
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -64,11 +73,13 @@ const Header = () => {
           </Link>
 
           {/* Search Bar - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-lg mx-8">
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-lg mx-8">
             <div className="relative w-full">
               <input
                 type="text"
                 placeholder={t('common.search')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
               />
               <svg
@@ -85,7 +96,7 @@ const Header = () => {
                 />
               </svg>
             </div>
-          </div>
+          </form>
 
           {/* Right Actions */}
           <div className="flex items-center space-x-4">

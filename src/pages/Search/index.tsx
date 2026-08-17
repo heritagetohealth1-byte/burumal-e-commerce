@@ -1,44 +1,45 @@
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import MobileNav from '../../components/layout/MobileNav';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
+import { productService } from '../../services/productService';
 
 export default function Search() {
   const { t } = useTranslation();
-  const [query, setQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get('q') || '');
+  const [products, setProducts] = useState<any[]>([]);
 
-  const mockProducts = [
-    {
-      id: 1,
-      name: 'Nike Air Max',
-      price: 85000,
-      currency: 'BIF',
-      image: 'https://via.placeholder.com/200',
-      rating: 4.8,
-      reviewCount: 126,
-    },
-    {
-      id: 2,
-      name: 'Samsung Galaxy',
-      price: 450000,
-      currency: 'BIF',
-      image: 'https://via.placeholder.com/200',
-      rating: 4.6,
-      reviewCount: 89,
-    },
-    {
-      id: 3,
-      name: 'Designer Dress',
-      price: 65000,
-      currency: 'BIF',
-      image: 'https://via.placeholder.com/200',
-      rating: 4.9,
-      reviewCount: 45,
-    },
-  ];
+  useEffect(() => {
+    // Initialize mock products if none exist
+    productService.initializeMockProducts();
+    
+    const searchQuery = searchParams.get('q') || '';
+    setQuery(searchQuery);
+    
+    if (searchQuery) {
+      const allProducts = productService.getAllProducts();
+      const filtered = allProducts.filter((product: any) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.category?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setProducts(filtered);
+    } else {
+      setProducts(productService.getAllProducts());
+    }
+  }, [searchParams]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      setSearchParams({ q: query.trim() });
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -49,7 +50,7 @@ export default function Search() {
           <h1 className="text-2xl font-bold mb-6">{t('nav.search')}</h1>
           
           {/* Search Bar */}
-          <div className="mb-8">
+          <form onSubmit={handleSearch} className="mb-8">
             <div className="flex gap-4">
               <Input
                 placeholder={t('common.search')}
@@ -57,9 +58,9 @@ export default function Search() {
                 onChange={(e) => setQuery(e.target.value)}
                 className="flex-1"
               />
-              <Button>Search</Button>
+              <Button type="submit">Search</Button>
             </div>
-          </div>
+          </form>
 
           {/* Filters */}
           <div className="mb-6 flex gap-4 flex-wrap">
@@ -78,11 +79,11 @@ export default function Search() {
 
           {/* Results */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {mockProducts.map((product) => (
+            {products.map((product: any) => (
               <div key={product.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer">
                 <div className="aspect-square bg-gray-200">
                   <img
-                    src={product.image}
+                    src={product.images?.[0] || product.image || 'https://via.placeholder.com/200'}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
@@ -92,11 +93,11 @@ export default function Search() {
                   <div className="flex items-center mb-1">
                     <span className="text-yellow-500">⭐</span>
                     <span className="text-xs text-gray-600 ml-1">
-                      {product.rating} ({product.reviewCount})
+                      {product.rating} ({product.reviews || product.reviewCount})
                     </span>
                   </div>
                   <p className="font-bold text-primary-600">
-                    {product.price.toLocaleString()} {product.currency}
+                    {product.price.toLocaleString()} {product.currency || 'BIF'}
                   </p>
                 </div>
               </div>
