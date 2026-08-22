@@ -35,27 +35,27 @@ export default function Register() {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate registration and login
-    setTimeout(() => {
+    try {
       // Parse name into firstName and lastName
       const nameParts = formData.name.trim().split(' ');
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
 
-      // Create mock user and token
-      const mockUser = {
-        id: Date.now().toString(),
+      // Validate passwords match
+      if (formData.password !== formData.confirmPassword) {
+        alert('Passwords do not match');
+        setLoading(false);
+        return;
+      }
+
+      // Register via backend API
+      await authService.register({
         phone: formData.phone,
+        password: formData.password,
         firstName,
         lastName,
         email: formData.email,
-        role: formData.role as 'customer' | 'seller' | 'admin',
-      };
-
-      const mockToken = 'mock_token_' + Date.now();
-
-      // Log user in
-      authService.login(mockToken, mockUser);
+      });
 
       setLoading(false);
 
@@ -65,7 +65,11 @@ export default function Register() {
       } else {
         navigate('/dashboard');
       }
-    }, 1000);
+    } catch (error) {
+      console.error('Registration failed:', error);
+      alert('Registration failed. Please try again.');
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -29,23 +29,24 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate login
-    setTimeout(() => {
-      setLoading(false);
-      // Store mock user data
-      authService.login('mock-token', {
-        id: '1',
+
+    try {
+      // Login via backend API
+      await authService.login({
         phone,
-        firstName: 'User',
-        lastName: 'Name',
-        email: 'user@example.com',
-        role: 'customer',
+        password,
       });
-      
+
+      setLoading(false);
+
       // Redirect to the page they were trying to access, or dashboard
       const redirectTo = location.state?.redirectTo || '/dashboard';
       navigate(redirectTo);
-    }, 1000);
+    } catch (error) {
+      console.error('Login failed:', error);
+      alert('Login failed. Please check your credentials and try again.');
+      setLoading(false);
+    }
   };
 
   return (
