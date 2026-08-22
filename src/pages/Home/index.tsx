@@ -148,10 +148,10 @@ export default function Home() {
         {/* Verified Sellers */}
         <section className="py-12 bg-white">
           <div className="container">
-            <h2 className="text-2xl font-bold mb-6">{t('home.verifiedSellers')}</h2>
+            <h2 className="text-2xl font-bold mb-6 text-left">{t('home.verifiedSellers')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {verifiedSellers.map((seller) => (
-                <div key={seller.id} className="card">
+                <div key={seller.id} className="card text-left">
                   <div className="flex items-center mb-3">
                     <span className="text-3xl mr-3">{seller.logo}</span>
                     <div>
