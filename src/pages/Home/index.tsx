@@ -29,7 +29,7 @@ export default function Home() {
     loadData();
   }, []);
 
-  const popularProducts = products.slice(0, 8).map(product => ({
+  const popularProducts = (products || []).slice(0, 8).map(product => ({
     id: product.id,
     name: product.name,
     price: product.price,
@@ -84,7 +84,7 @@ export default function Home() {
           <div className="container">
             <h2 className="text-2xl font-bold mb-6">{t('home.categories')}</h2>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-              {categories.map((category) => (
+              {(categories || []).map((category) => (
                 <Link
                   key={category.id}
                   to={`/category/${category.slug}`}
