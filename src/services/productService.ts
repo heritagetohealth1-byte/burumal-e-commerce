@@ -1,3 +1,5 @@
+import { productsApi, ProductFilters } from './api/products.api';
+
 export interface Product {
   id: string;
   name: string;
@@ -18,23 +20,59 @@ export interface Product {
 const STORAGE_KEY = 'burumal_products';
 
 export const productService = {
-  getAllProducts: (): Product[] => {
-    if (typeof window === 'undefined') return [];
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return [];
-    return JSON.parse(stored);
+  getAllProducts: async (): Promise<Product[]> => {
+    try {
+      const response = await productsApi.getProducts();
+      return response.products;
+    } catch (error) {
+      console.error('Failed to fetch products:', error);
+      // Fallback to localStorage if API fails
+      if (typeof window === 'undefined') return [];
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return [];
+      return JSON.parse(stored);
+    }
   },
 
-  getProductsByCategory: (category: string): Product[] => {
-    const products = productService.getAllProducts();
-    return products.filter(p => p.category === category);
+  getProductsByCategory: async (category: string): Promise<Product[]> => {
+    try {
+      const response = await productsApi.getProductsByCategory(category);
+      return response.products;
+    } catch (error) {
+      console.error('Failed to fetch products by category:', error);
+      // Fallback to localStorage
+      const products = await productService.getAllProducts();
+      return products.filter(p => p.category === category);
+    }
   },
 
-  getProductById: (id: string): Product | undefined => {
-    const products = productService.getAllProducts();
-    return products.find(p => p.id === id);
+  getProductById: async (id: string): Promise<Product | undefined> => {
+    try {
+      return await productsApi.getProduct(id);
+    } catch (error) {
+      console.error('Failed to fetch product:', error);
+      // Fallback to localStorage
+      const products = await productService.getAllProducts();
+      return products.find(p => p.id === id);
+    }
   },
 
+  searchProducts: async (query: string, filters: ProductFilters = {}): Promise<Product[]> => {
+    try {
+      const response = await productsApi.searchProducts(query, filters);
+      return response.products;
+    } catch (error) {
+      console.error('Failed to search products:', error);
+      // Fallback to localStorage
+      const products = await productService.getAllProducts();
+      return products.filter(p => 
+        p.name.toLowerCase().includes(query.toLowerCase()) ||
+        p.description.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+  },
+
+  // Keep localStorage methods for seller operations (add/update/delete)
   addProduct: (product: Omit<Product, 'id' | 'createdAt' | 'rating' | 'reviews'>): Product => {
     const products = productService.getAllProducts();
     const newProduct: Product = {

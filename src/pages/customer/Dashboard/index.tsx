@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomerSidebar from '../../../components/customer/Sidebar';
 import { authService } from '../../../services/authService';
-import { walletService } from '../../../services/walletService';
+import { walletService, Wallet } from '../../../services/walletService';
 import { cartService } from '../../../services/cartService';
 import { orderService } from '../../../services/orderService';
 import { wishlistService } from '../../../services/wishlistService';
@@ -12,7 +12,7 @@ import { productService } from '../../../services/productService';
 export default function CustomerDashboard() {
   const navigate = useNavigate();
   const user = authService.getUser();
-  const [wallet, setWallet] = useState(walletService.getWallet());
+  const [wallet, setWallet] = useState<Wallet>({ balance: 0, currency: 'BIF', transactions: [] });
   const [cartCount, setCartCount] = useState(cartService.getCartCount());
   const [orderCount, setOrderCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
@@ -36,16 +36,20 @@ export default function CustomerDashboard() {
     // Initialize mock products if none exist
     productService.initializeMockProducts();
     
+    // Clear any existing wishlist placeholder data
+    wishlistService.clearAllWishlists();
+    wishlistService.initializeWishlist();
+    
     // Update data periodically
-    const interval = setInterval(() => {
-      setWallet(walletService.getWallet());
+    const interval = setInterval(async () => {
+      setWallet(await walletService.getWallet());
       setCartCount(cartService.getCartCount());
       if (user) {
-        setOrderCount(orderService.getOrderCount(user.id));
-        setWishlistCount(wishlistService.getWishlistCount(user.id));
-        const orders = orderService.getOrdersByUserId(user.id);
+        setOrderCount(await orderService.getOrderCount(user.id));
+        setWishlistCount(await wishlistService.getWishlistCount(user.id));
+        const orders = await orderService.getOrdersByUserId(user.id);
         setRecentOrder(orders.length > 0 ? orders[0] : null);
-        const products = productService.getAllProducts();
+        const products = await productService.getAllProducts();
         setRecommendedProducts(products.slice(0, 4));
       }
     }, 1000);

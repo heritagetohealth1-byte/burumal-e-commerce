@@ -18,7 +18,12 @@ export default function CustomerWishlist() {
       return;
     }
 
-    // Load wishlist items
+    // Clear any existing wishlist data to remove placeholders
+    wishlistService.clearAllWishlists();
+    // Initialize fresh wishlist storage
+    wishlistService.initializeWishlist();
+
+    // Load wishlist items (will be empty now)
     const loadWishlist = () => {
       const wishlist = wishlistService.getWishlist(user.id);
       const products = productService.getAllProducts();

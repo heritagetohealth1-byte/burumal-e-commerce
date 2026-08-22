@@ -19,10 +19,14 @@ export default function Home() {
     productService.initializeMockProducts();
     // Initialize mock categories if none exist
     categoryService.initializeMockCategories();
-    // Load all products
-    setProducts(productService.getAllProducts());
-    // Load all categories
-    setCategories(categoryService.getAllCategories());
+    
+    // Load all products and categories asynchronously
+    const loadData = async () => {
+      setProducts(await productService.getAllProducts());
+      setCategories(categoryService.getAllCategories());
+    };
+    
+    loadData();
   }, []);
 
   const popularProducts = products.slice(0, 8).map(product => ({
